@@ -1,0 +1,205 @@
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  display:flex;
+  justify-content:center;
+}
+
+html, body{
+  background:#0f0f0f;
+  margin:0;
+  padding:0;
+  min-height:100%;
+}
+
+.page{
+  font-family:var(--font-sans);
+  color:#f5f5f5;
+  background:transparent;
+  max-width:800px;
+  margin:0 auto;
+  padding:2rem 1rem
+}
+
+.header-band{
+  background:#1a1a1a;
+  border-radius:12px;
+  padding:2rem;
+  display:flex;
+  gap:2rem;
+  align-items:flex-end;
+  margin-bottom:1.5rem;
+  border:1px solid #333
+}
+
+.skin-wrap{
+  flex-shrink:0;
+  width:88px;
+  background:rgba(255,255,255,0.05);
+  border-radius:8px;
+  display:flex;
+  align-items:flex-end;
+  justify-content:center;
+  overflow:hidden;
+  padding-top:8px;
+  border:1px solid rgba(255,255,255,0.1)
+}
+
+.skin-wrap img{
+  width:76px;
+  display:block;
+  image-rendering:pixelated
+}
+
+.header-info{flex:1;color:#ffffff}
+
+.role-badge{
+  font-size:11px;
+  text-transform:uppercase;
+  background:#2a2a2a;
+  border:1px solid #444;
+  padding:4px 10px;
+  margin-bottom:10px;
+  color:#d4b15a
+}
+
+h1{font-size:26px;color:#ffffff}
+
+.tagline{font-size:13px;color:#cfcfcf;margin-top:4px}
+
+.meta-strip{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  margin-top:1rem;
+  padding-top:1rem;
+  border-top:1px solid #333
+}
+
+.meta-pill{
+  font-size:12px;
+  background:#2a2a2a;
+  border:1px solid #444;
+  border-radius:20px;
+  padding:4px 12px;
+  color:#ffffff
+}
+
+.tab-nav{
+  display:flex;
+  gap:4px;
+  margin-bottom:1rem;
+  border-bottom:1px solid #333
+}
+
+.tab-btn{
+  font-size:13px;
+  color:#cccccc;
+  background:none;
+  border:none;
+  padding:8px 14px;
+  cursor:pointer;
+  border-bottom:2px solid transparent
+}
+
+.tab-btn.active{
+  color:#ffffff;
+  border-bottom:2px solid #d4b15a
+}
+
+.tab-panel{display:none}
+.tab-panel.active{display:block}
+
+.card{
+  background:#1a1a1a;
+  border:1px solid #333;
+  border-radius:12px;
+  padding:1.25rem;
+  margin-bottom:1rem
+}
+
+.card-label{
+  font-size:11px;
+  text-transform:uppercase;
+  margin-bottom:10px;
+  color:#ffffff;
+  letter-spacing:0.08em
+}
+
+.card p{
+  font-size:14px;
+  color:#eaeaea;
+  line-height:1.7
+}
+</style>
+
+<div class="page">
+
+<div class="header-band">
+  <div class="skin-wrap">
+    <img src="SkinRPEthanws.png">
+  </div>
+  <div class="header-info">
+    <div class="role-badge">Médicomage · Ilvermorny</div>
+    <h1>Ethan Caldwell</h1>
+    <div class="tagline">22 novembre 1868 · 25 ans (1894)</div>
+    <div class="meta-strip">
+      <div class="meta-pill">Sang mêlée</div>
+      <div class="meta-pill">Serpent Cornu</div>
+      <div class="meta-pill">Aucune faculté</div>
+    </div>
+  </div>
+</div>
+
+<div class="tab-nav">
+  <button class="tab-btn active" onclick="switchTab('profil',this)">Profil</button>
+  <button class="tab-btn" onclick="switchTab('histoire',this)">Histoire</button>
+  <button class="tab-btn" onclick="switchTab('ambitions',this)">Ambitions</button>
+</div>
+
+<!-- PROFIL -->
+<div id="tab-profil" class="tab-panel active">
+  <div class="card">
+    <div class="card-label">Description</div>
+    <p>
+    Ethan mesure environ 1m75, avec une carrure simple forgée par le travail. Ses cheveux châtains sont souvent en bataille, et ses yeux verts restent constamment attentifs.  
+    Il porte des vêtements pratiques et usés mais entretenus. Sa sacoche médicale, modeste, est toujours parfaitement organisée.  
+    <br><br>
+    Pragmatique et direct, Ethan agit vite et efficacement. Il préfère l’action utile à la théorie parfaite. Sociable sans être expansif, il inspire confiance par sa simplicité et son honnêteté.
+    </p>
+  </div>
+</div>
+
+<!-- HISTOIRE -->
+<div id="tab-histoire" class="tab-panel">
+  <div class="card">
+    <div class="card-label">Parcours de vie</div>
+    <p>
+    Ethan Caldwell est né le 22 novembre 1868 dans le Massachusetts, au sein d’un foyer modeste et discret. Élevé par sa mère, guérisseuse sorcière indépendante, il grandit dans un environnement où la magie n’avait rien de spectaculaire, mais tout d’essentiel. Très tôt, il comprend que le monde magique américain repose sur des règles strictes : rester caché, ne jamais attirer l’attention des Non-Majs, et surtout ne jamais prendre la magie à la légère. Son enfance se déroule dans l’observation plutôt que dans l’apprentissage direct. Assis dans un coin de la pièce, il regarde sa mère travailler, mémorisant des gestes simples : comment nettoyer une plaie, comment calmer un patient, comment parler pour rassurer avant même d’agir. Un soir d’hiver, alors qu’un voisin sorcier souffrait d’une brûlure due à une potion mal maîtrisée, Ethan resta éveillé jusqu’au milieu de la nuit, tenant une lampe pendant que sa mère travaillait ; ce souvenir, banal en apparence, marqua profondément sa perception du métier. Sa première manifestation magique survient à neuf ans, lorsqu’il tente instinctivement d’atténuer une brûlure sur sa propre main. La douleur diminue brièvement, sans précision ni contrôle, mais suffisamment pour confirmer une prédisposition naturelle tournée vers le soin plutôt que vers la puissance brute. À son entrée à Ilvermorny, il est réparti chez les Serpents Cornus, où il se montre sérieux sans jamais chercher à se démarquer. Il n’est pas le plus brillant en théorie, oubliant parfois des détails ou confondant certaines notions, mais il compense par une compréhension rapide des situations concrètes. Lors d’un exercice encadré, il se distingue en stabilisant un camarade légèrement blessé avant même que l’intervention du professeur ne soit nécessaire, non pas par maîtrise parfaite, mais par réflexe. Il prend également l’habitude de rester après certains cours pour observer le rangement des équipements ou poser des questions simples mais pertinentes, préférant comprendre le “pourquoi” plutôt que réciter le “comment”. Après sa scolarité, Ethan refuse les voies institutionnelles et choisit un apprentissage plus rude mais plus formateur. Pendant plusieurs années, il accompagne différents guérisseurs indépendants à travers le Massachusetts, intervenant dans des situations variées : morsures de créatures mineures, effets secondaires de potions mal dosées, blessures dues à une magie mal contrôlée. Il apprend à travailler avec peu de moyens, à improviser lorsque les ressources manquent, et à garder la tête froide face à des patients paniqués. Une habitude lui reste d’ailleurs de cette période : vérifier systématiquement deux fois ses fioles avant chaque intervention, après avoir un jour utilisé une potion mal étiquetée qui, sans être grave, lui valut une correction mémorable de son mentor. Ces années forgent son approche : directe, efficace, sans recherche de perfection inutile. En 1894, à seulement 25 ans, Ethan rejoint Ilvermorny en tant que médicomage. Il sait qu’il n’est pas le plus érudit ni le plus expérimenté sur le papier, mais il apporte avec lui quelque chose de plus rare : une expérience concrète du terrain, acquise là où il n’y avait souvent personne d’autre pour intervenir, et une certitude simple — agir quand il le faut vaut toujours mieux que hésiter trop longtemps.
+    </p>
+  </div>
+</div>
+
+<div id="tab-ambitions" class="tab-panel">
+  <div class="card">
+    <div class="card-label">Objectifs</div>
+    <p>
+    Ethan ne s’est jamais imaginé dans une position prestigieuse ou reconnue. Pour lui, la médicomagie n’a rien d’une vocation héroïque, mais tout d’un métier nécessaire, presque évident. Depuis ses années sur le terrain auprès de guérisseurs indépendants, il a développé une conviction simple : un bon médicomage n’est pas celui qui impressionne, mais celui qui intervient correctement au moment où il le faut. Avant même son arrivée à Ilvermorny, il se fixe une ligne de conduite claire : rester utile, stable et capable d’agir sans hésitation face à l’imprévu.
+    <br><br>
+    Habitué aux interventions avec peu de moyens, Ethan sait pourtant qu’il lui manque une base théorique plus solide. C’est justement ce qui motive sa venue à Ilvermorny : apprendre autrement que par l’expérience brute. Il souhaite comprendre davantage les mécanismes derrière ce qu’il a pratiqué pendant des années, sans pour autant perdre son approche instinctive du soin. Il a pris l’habitude d’analyser mentalement ses anciens cas, se remémorant certaines erreurs ou hésitations pour ne pas les reproduire.
+    <br><br>
+    Il ne cherche pas à faire carrière dans une institution ni à gravir des échelons politiques. Les structures officielles comme le MACUSA ne font pas partie de ses objectifs, qu’il considère trop éloignées de la réalité du terrain. Son ambition est volontairement simple : devenir un médicomage fiable, capable de travailler dans n’importe quelles conditions, et de protéger ceux qui en ont besoin sans se poser de questions inutiles. Pour lui, Ilvermorny représente moins une étape de prestige qu’un moyen de mieux faire ce qu’il a toujours essayé de faire : soigner correctement, et rester présent quand les autres hésitent.
+    </p>
+  </div>
+</div>
+
+</div></div>
+
+<script>
+function switchTab(name,btn){
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('tab-'+name).classList.add('active');
+  btn.classList.add('active');
+}
+</script>
