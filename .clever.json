@@ -7,6 +7,14 @@
       "git_ssh_url": "git+ssh://git@push-n3-par-clevercloud-customers.services.clever-cloud.com/app_acd88243-b5c8-4024-9376-7f2500f073a2.git",
       "name": "fresque",
       "alias": "fresque"
+    },
+    {
+      "app_id": "app_d6b59485-3233-4e82-a208-e653e563948b",
+      "org_id": "user_f84f3de6-848f-4b14-973b-2f308bce840e",
+      "deploy_url": "https://push-n3-par-clevercloud-customers.services.clever-cloud.com/app_d6b59485-3233-4e82-a208-e653e563948b.git",
+      "git_ssh_url": "git+ssh://git@push-n3-par-clevercloud-customers.services.clever-cloud.com/app_d6b59485-3233-4e82-a208-e653e563948b.git",
+      "name": "trone",
+      "alias": "trone"
     }
   ]
 }
