@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fresque 32×32</title>
+<style>
+  :root { --bg:#111; --fg:#eee; --mut:#888; --acc:#ffd23f; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--fg); font:15px/1.4 ui-monospace, Menlo, Consolas, monospace;
+         display:flex; flex-direction:column; align-items:center; padding:16px; gap:12px; }
+  h1 { margin:0; font-size:20px; letter-spacing:.05em; }
+  h1 span { color:var(--acc); }
+  #grid { width:min(92vw, 560px); aspect-ratio:1; image-rendering:pixelated; cursor:crosshair;
+          border:2px solid #333; touch-action:manipulation; background:#fff; }
+  #palette { display:grid; grid-template-columns:repeat(8, 32px); gap:6px; }
+  #palette button { width:32px; height:32px; border:2px solid #333; border-radius:4px; cursor:pointer; padding:0; }
+  #palette button.sel { outline:3px solid var(--acc); outline-offset:1px; }
+  #bar { display:flex; gap:12px; align-items:center; flex-wrap:wrap; justify-content:center; }
+  input { background:#222; color:var(--fg); border:1px solid #444; padding:6px 8px; border-radius:4px; font:inherit; width:12ch; }
+  #status { min-height:1.4em; color:var(--mut); text-align:center; }
+  #status.ok { color:#7f7; } #status.err { color:#f77; }
+  small { color:var(--mut); }
+</style>
+</head>
+<body>
+  <h1>FRESQUE <span>32×32</span></h1>
+  <small>Un pixel toutes les 10 s. Tout le monde peint sur la même toile.</small>
+  <canvas id="grid" width="32" height="32"></canvas>
+  <div id="palette"></div>
+  <div id="bar">
+    <label>Pseudo <input id="author" maxlength="24" placeholder="anonyme"></label>
+    <small id="stats"></small>
+  </div>
+  <div id="status">Choisis une couleur, clique sur la toile.</div>
+<script>
+const cv = document.getElementById('grid'), ctx = cv.getContext('2d');
+const statusEl = document.getElementById('status'), statsEl = document.getElementById('stats');
+const authorEl = document.getElementById('author');
+let cfg, color = 3, readyAt = 0;
+try { authorEl.value = localStorage.getItem('author') || ''; } catch {}
+authorEl.onchange = () => { try { localStorage.setItem('author', authorEl.value); } catch {} };
+
+function say(msg, cls = '') { statusEl.textContent = msg; statusEl.className = cls; }
+
+async function load() {
+  const r = await fetch('/api/pixels'); const d = await r.json();
+  ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, cfg.size, cfg.size);
+  for (const p of d.pixels) { ctx.fillStyle = cfg.palette[p.color]; ctx.fillRect(p.x, p.y, 1, 1); }
+  statsEl.textContent = `${d.stats.painted} / ${cfg.size * cfg.size} pixels peints`;
+}
+
+cv.addEventListener('click', async e => {
+  const rect = cv.getBoundingClientRect();
+  const x = Math.floor((e.clientX - rect.left) / rect.width * cfg.size);
+  const y = Math.floor((e.clientY - rect.top) / rect.height * cfg.size);
+  if (Date.now() < readyAt) return say(`Patience… encore ${Math.ceil((readyAt - Date.now()) / 1000)} s`, 'err');
+  const r = await fetch('/api/pixels', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ x, y, color, author: authorEl.value }) });
+  const d = await r.json();
+  if (r.status === 429) { readyAt = Date.now() + d.waitMs; return tick(); }
+  if (!r.ok) return say(d.error || 'erreur', 'err');
+  readyAt = Date.now() + d.cooldownMs;
+  ctx.fillStyle = cfg.palette[color]; ctx.fillRect(x, y, 1, 1);
+  say(`Pixel posé en (${x}, ${y}) !`, 'ok'); load(); tick();
+});
+
+cv.addEventListener('mousemove', async e => {
+  const rect = cv.getBoundingClientRect();
+  cv.title = `(${Math.floor((e.clientX - rect.left) / rect.width * cfg.size)}, ${Math.floor((e.clientY - rect.top) / rect.height * cfg.size)})`;
+});
+
+function tick() {
+  const left = readyAt - Date.now();
+  if (left > 0) { say(`Prochain pixel dans ${Math.ceil(left / 1000)} s`); setTimeout(tick, 250); }
+  else say('À toi de jouer !', 'ok');
+}
+
+(async () => {
+  cfg = await (await fetch('/api/config')).json();
+  const pal = document.getElementById('palette');
+  cfg.palette.forEach((c, i) => {
+    const b = document.createElement('button'); b.style.background = c; b.title = c;
+    if (i === color) b.className = 'sel';
+    b.onclick = () => { color = i; pal.querySelectorAll('button').forEach(x => x.className = ''); b.className = 'sel'; };
+    pal.appendChild(b);
+  });
+  await load(); setInterval(load, 3000);
+})();
+</script>
+</body>
+</html>
