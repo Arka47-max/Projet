@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Le Trône</title>
+<style>
+  :root { --bg:#14110d; --card:#1f1a13; --fg:#f3ead8; --mut:#9b8f7a; --gold:#f2c14e; --red:#e2574c; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--fg); font:16px/1.5 Georgia, 'Times New Roman', serif;
+         display:flex; flex-direction:column; align-items:center; padding:24px 16px 48px; }
+  main { width:100%; max-width:640px; display:flex; flex-direction:column; gap:20px; }
+  h1 { margin:0; text-align:center; font-size:28px; letter-spacing:.12em; color:var(--gold); }
+  .sub { text-align:center; color:var(--mut); margin-top:-12px; font-style:italic; }
+  #throne { background:var(--card); border:2px solid var(--gold); border-radius:10px; padding:28px 20px; text-align:center; }
+  #crown { font-size:40px; line-height:1; }
+  #msg { font-size:clamp(22px, 5vw, 32px); margin:12px 0; word-wrap:break-word; }
+  #who { color:var(--gold); }
+  #timer { font:600 20px ui-monospace, Menlo, monospace; color:var(--fg); margin-top:6px; }
+  form { display:flex; flex-direction:column; gap:8px; }
+  .row { display:flex; gap:8px; }
+  input, textarea, button { font:inherit; border-radius:6px; border:1px solid #4a3f2e; background:#100d09; color:var(--fg); padding:10px; }
+  textarea { resize:vertical; min-height:60px; }
+  input { flex:1; min-width:0; }
+  button { background:var(--gold); color:#1a1306; font-weight:bold; border:none; cursor:pointer; white-space:nowrap; }
+  button:disabled { opacity:.5; cursor:default; }
+  #status { min-height:1.4em; text-align:center; color:var(--mut); }
+  #status.err { color:var(--red); } #status.ok { color:var(--gold); }
+  h2 { font-size:16px; letter-spacing:.1em; text-transform:uppercase; color:var(--mut); margin:8px 0; }
+  ol, ul { margin:0; padding:0; list-style:none; }
+  li { display:flex; justify-content:space-between; gap:12px; padding:8px 0; border-bottom:1px solid #2c251b; }
+  li .m { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  li .d { font-family:ui-monospace, monospace; color:var(--gold); flex-shrink:0; }
+  li.cur .d::after { content:' 👑'; }
+  .a { color:var(--mut); }
+</style>
+</head>
+<body>
+<main>
+  <h1>LE TRÔNE</h1>
+  <div class="sub">Un seul message à la fois. Écris, et tu détrônes le roi.</div>
+
+  <section id="throne">
+    <div id="crown">👑</div>
+    <div id="msg">Le trône est vide…</div>
+    <div><span id="who"></span></div>
+    <div id="timer"></div>
+  </section>
+
+  <form id="form">
+    <textarea id="message" maxlength="140" placeholder="Ta proclamation (140 caractères max)" required></textarea>
+    <div class="row">
+      <input id="author" maxlength="24" placeholder="Ton nom de règne">
+      <button id="btn">Prendre le trône</button>
+    </div>
+    <div id="status"></div>
+  </form>
+
+  <section>
+    <h2>Règnes les plus longs</h2>
+    <ol id="top"></ol>
+  </section>
+  <section>
+    <h2>Derniers coups d'État</h2>
+    <ul id="recent"></ul>
+  </section>
+</main>
+<script>
+const $ = id => document.getElementById(id);
+let king = null, kingStart = 0, readyAt = 0;
+try { $('author').value = localStorage.getItem('author') || ''; } catch {}
+
+const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
+function dur(s) {
+  s = Math.max(0, Math.floor(s));
+  const h = Math.floor(s / 3600), m = Math.floor(s % 3600 / 60), r = s % 60;
+  return h ? `${h}h${String(m).padStart(2,'0')}` : m ? `${m}m${String(r).padStart(2,'0')}s` : `${r}s`;
+}
+function say(t, c = '') { $('status').textContent = t; $('status').className = c; }
+
+async function load() {
+  const d = await (await fetch('/api/state')).json();
+  king = d.king;
+  if (king) {
+    kingStart = Date.now() - king.secs * 1000;
+    $('msg').textContent = king.message;
+    $('who').textContent = '— ' + king.author;
+  }
+  $('top').innerHTML = d.top.map(r =>
+    `<li class="${r.current ? 'cur' : ''}"><span class="m">« ${esc(r.message)} » <span class="a">— ${esc(r.author)}</span></span><span class="d">${dur(r.secs)}</span></li>`).join('');
+  $('recent').innerHTML = d.recent.map(r =>
+    `<li><span class="m">${esc(r.author)} <span class="a">détrôné·e par</span> ${esc(r.ended_by)}</span><span class="d">${dur(r.secs)}</span></li>`).join('')
+    || '<li class="a">Aucun coup d\'État… pour l\'instant.</li>';
+}
+
+setInterval(() => {
+  $('timer').textContent = king ? `règne depuis ${dur((Date.now() - kingStart) / 1000)}` : '';
+  const left = readyAt - Date.now();
+  $('btn').disabled = left > 0;
+  $('btn').textContent = left > 0 ? `Attends ${Math.ceil(left / 1000)} s` : 'Prendre le trône';
+}, 250);
+
+$('form').onsubmit = async e => {
+  e.preventDefault();
+  try { localStorage.setItem('author', $('author').value); } catch {}
+  const r = await fetch('/api/throne', { method:'POST', headers:{ 'Content-Type':'application/json' },
+    body: JSON.stringify({ message: $('message').value, author: $('author').value }) });
+  const d = await r.json();
+  if (!r.ok) { if (d.waitMs) readyAt = Date.now() + d.waitMs; return say(d.error, 'err'); }
+  readyAt = Date.now() + 15000;
+  $('message').value = '';
+  say(d.dethroned ? `Tu as détrôné ${d.dethroned.author} après ${dur(d.dethroned.secs)} de règne. Longue vie au roi !` : 'Tu es le premier roi !', 'ok');
+  load();
+};
+
+load(); setInterval(load, 3000);
+</script>
+</body>
+</html>
